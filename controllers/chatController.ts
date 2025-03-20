@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Order from "../models/Order";
 import { extractOrderDetails, tempOrder } from "../services/ollamaService";
 
-export async function handleChat(req: Request, res: Response) {
+export default async function handleChat(req: Request, res: Response) {
   const { userId, message } = req.body;
 
   if (!userId || !message) {
