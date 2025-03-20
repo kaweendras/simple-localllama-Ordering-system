@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const OLLAMA_URL = "http://127.0.0.1:11434/api/generate";
+const OLLAMA_URL =
+  process.env.OLLAMA_API_URL || "http://127.0.0.1:11434/api/generate";
 const MODEL_NAME = process.env.MODELNAME;
 
 export let tempOrder: any; // Temporary storage for order before confirmation
