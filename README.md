@@ -57,7 +57,7 @@ The system exposes a REST API that can be integrated with any front-end or messa
 
 ### API Endpoints
 
-#### POST /chat
+#### POST /api/chat
 
 Process a chat message and handle order logic.
 
