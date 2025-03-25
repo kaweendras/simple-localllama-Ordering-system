@@ -40,3 +40,35 @@ export async function extractOrderDetails(userMessage: string) {
     return null;
   }
 }
+
+export const matchUserInpurt = async (userMessage: string) => {
+  console.log("🔍 Matching user input:", userMessage);
+  try {
+    const response = await axios.post(OLLAMA_URL, {
+      model: MODEL_NAME,
+      prompt: `Check if the user input is positive or negative:
+          Example Positive input: "Yes Go Ahed", "Yes", "confirm", "I want to confirm","sounds good","positive"
+          Example output: 
+          {
+          userResponse:yes
+          }
+
+          Example Negative input: "No", "I don't want to confirm", "I don't want to order", "negative", "scratch that", "cancel"
+          Example output: 
+          {
+          userResponse:no
+          }
+          Now check the user input from: "${userMessage}"`,
+      stream: false,
+    });
+
+    console.log("🔍 Ollama Response:", response.data.response);
+    const parsedResponse = JSON.parse(response.data.response);
+    tempOrder = parsedResponse;
+
+    return parsedResponse;
+  } catch (error) {
+    console.error("❌ Ollama API Error:", error);
+    return null;
+  }
+};
