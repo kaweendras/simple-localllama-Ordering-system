@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 import Order from "../models/Order";
-import { extractOrderDetails, tempOrder } from "../services/ollamaService";
+import {
+  extractOrderDetails,
+  tempOrder,
+  matchUserInpurt,
+} from "../services/ollamaService";
 
-export default async function handleChat(req: Request, res: Response) {
+export async function handleChat(req: Request, res: Response) {
   const { userId, message } = req.body;
 
   if (!userId || !message) {
@@ -108,3 +112,16 @@ export default async function handleChat(req: Request, res: Response) {
 
   res.json({ reply: "I'm not sure what you mean. Can you clarify?" });
 }
+
+export const handleUserResponse = async (req: Request, res: Response) => {
+  const { userId, message } = req.body;
+
+  if (!userId || !message) {
+    res.status(400).json({ error: "Missing userId or message" });
+    return;
+  }
+
+  const userResponse = await matchUserInpurt(message);
+  console.log("🔍 User response:", userResponse);
+  res.json({ reply: userResponse });
+};
