@@ -47,7 +47,7 @@ export const matchUserInpurt = async (userMessage: string) => {
     const response = await axios.post(OLLAMA_URL, {
       model: MODEL_NAME,
       prompt: `Check if the user input is positive or negative:
-          Example Positive input: "Yes Go Ahed", "Yes", "confirm", "I want to confirm","sounds good","positive"
+          Example Positive input: "Yes Go Ahed", "Yes", "confirm", "I want to confirm","sounds good","positive". No codes or scripts needed. Just the result/output.
           Example output: 
           {
           userResponse:yes
