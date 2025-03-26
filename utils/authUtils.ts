@@ -14,4 +14,12 @@ const verifyToken = (token: string) => {
   }
 };
 
-export { verifyToken };
+//create unique token with timestamp and hashing it
+const createUniqueKey = () => {
+  const timestamp = new Date().getTime();
+  //hashing the timestamp
+  const uniqueKey = jwt.sign({ timestamp }, jwtSecret);
+  return uniqueKey;
+};
+
+export { verifyToken, createUniqueKey };
