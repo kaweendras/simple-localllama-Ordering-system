@@ -105,6 +105,7 @@ export async function handleChat(req: Request, res: Response) {
       res.json({
         reply: structuredOrder.reply,
         orderDetails: structuredOrder.orderDetails,
+        type: structuredOrder.type,
       });
       return;
     }

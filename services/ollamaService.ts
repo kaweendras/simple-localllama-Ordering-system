@@ -24,7 +24,8 @@ export async function extractOrderDetails(userMessage: string) {
                 "size": ["large"],
                 "extras": ["pepperoni"],
                 "drink":[ "large diet coke"]
-                 }
+                 },
+            type: "Place Order"
             }
             Now extract the order from: "${userMessage}"`,
       stream: false,
