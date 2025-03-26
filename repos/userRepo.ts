@@ -2,7 +2,7 @@ import User from "../models/User";
 
 import { createUniqueKey } from "../utils/authUtils";
 
-export interface UserDetails {
+interface UserDetails {
   userId: string;
   fname: string;
   lname: string;
@@ -34,3 +34,5 @@ const createUser = async (userDetails: UserDetails) => {
     throw error;
   }
 };
+
+export { getAllUsers, createUser, UserDetails };
