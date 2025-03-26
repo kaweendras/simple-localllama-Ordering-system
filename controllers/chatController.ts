@@ -1,10 +1,15 @@
 import { Request, Response } from "express";
-import Order from "../models/Order";
 import {
   extractOrderDetails,
   tempOrder,
   matchUserInpurt,
 } from "../services/ollamaService";
+import {
+  createOrder,
+  getLastOrderByUserId,
+  getOrderById,
+  updateOrder,
+} from "../repos/orderRepo";
 
 export async function handleChat(req: Request, res: Response) {
   const { userId, message } = req.body;
@@ -17,14 +22,7 @@ export async function handleChat(req: Request, res: Response) {
   // Check if it's a confirmation message
   if (/yes|go ahead|confirm/i.test(message)) {
     try {
-      const newOrder = new Order({
-        userId,
-        item: tempOrder.orderDetails.items[0],
-        size: tempOrder.orderDetails.size[0],
-        extras: tempOrder.orderDetails.extras,
-        drink: tempOrder.orderDetails.drink[0],
-      });
-      await newOrder.save();
+      const newOrder = await createOrder(userId, tempOrder.orderDetails);
       res.json({ reply: `Order confirmed! Your order ID is ${newOrder._id}.` });
       return;
     } catch (err) {
@@ -36,7 +34,7 @@ export async function handleChat(req: Request, res: Response) {
 
   // Check if user wants to view their order
   if (/view order|show order|view my order|show my order/i.test(message)) {
-    const lastOrder = await Order.findOne({ userId }).sort({ _id: -1 });
+    const lastOrder = await getLastOrderByUserId(userId);
     if (lastOrder) {
       res.json({
         reply: `Your last order is: ${lastOrder.size} ${
@@ -54,7 +52,7 @@ export async function handleChat(req: Request, res: Response) {
   const modifyMatch = message.match(/change order (\w+)/i);
   if (modifyMatch) {
     const orderId = modifyMatch[1];
-    const order = await Order.findById(orderId);
+    const order = await getOrderById(orderId);
 
     if (!order) {
       res.json({ reply: "Order not found." });
@@ -73,8 +71,7 @@ export async function handleChat(req: Request, res: Response) {
     }
 
     // Update order & ask for confirmation
-    Object.assign(order, modifiedOrder, { modified: true });
-    await order.save();
+    await updateOrder(order, modifiedOrder);
 
     res.json({
       reply: `Order updated! New details: ${modifiedOrder.size} ${
