@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { createUser, getUserByEmail, UserDetails } from "../repos/userRepo";
 import { createUniqueKey } from "../utils/authUtils";
 
-const SECRET_KEY = process.env.JWT_SECRET || "your-secret-key";
+const SECRET_KEY = process.env.SECRET_KEY as string;
 
 // User registration service
 export const registerUser = async (userData: Omit<UserDetails, "userId">) => {
@@ -63,9 +63,18 @@ export const loginUser = async (email: string, password: string) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user.userId }, SECRET_KEY, {
-      expiresIn: "24h",
-    });
+    const token = jwt.sign(
+      {
+        userId: user.userId,
+        email: user.email,
+        fname: user.fname,
+        lname: user.lname,
+      },
+      SECRET_KEY,
+      {
+        expiresIn: "24h",
+      }
+    );
 
     // Return user data without password and token
     return {
