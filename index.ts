@@ -15,6 +15,7 @@ app.use(
   cors({
     origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: ["Content-Length", "Authorization"],
     preflightContinue: false,
     optionsSuccessStatus: 204,
   })
