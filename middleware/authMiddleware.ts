@@ -26,15 +26,11 @@ export const authMiddleware = (
     res.status(401).json({ message: "Invalid token", error });
   }
 
-  console.log(decoded);
-
   // Attach decoded token to request object
   // TODO : Fix this type issue and set decoded token to req.user
   // req.user = decoded;
   const email = (decoded as JwtPayload)?.email;
   if (decoded) {
-    // logger.info(`Token verified for user: ${email}`);
-    console.log(decoded);
   } else {
     console.error(`Token verification failed`);
     return;

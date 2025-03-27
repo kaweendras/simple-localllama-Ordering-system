@@ -11,8 +11,17 @@ import {
   updateOrder,
 } from "../repos/orderRepo";
 
+import { verifyToken } from "../utils/authUtils";
+
 export async function handleChat(req: Request, res: Response) {
-  const { userId, message } = req.body;
+  const { message } = req.body;
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    res.status(401).json({ error: "Unauthorized: Token is missing" });
+    return;
+  }
+  const { decoded }: any = verifyToken(token);
+  const userId = decoded?.userId;
 
   if (!userId || !message) {
     res.status(400).json({ error: "Missing userId or message" });
@@ -116,7 +125,19 @@ export async function handleChat(req: Request, res: Response) {
 }
 
 export const handleUserResponse = async (req: Request, res: Response) => {
-  const { userId, message } = req.body;
+  const { message } = req.body;
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    res.status(401).json({ error: "Unauthorized: Token is missing" });
+    return;
+  }
+  const { decoded }: any = verifyToken(token);
+  const userId = decoded?.userId;
+
+  if (!userId || !message) {
+    res.status(400).json({ error: "Missing userId or message" });
+    return;
+  }
 
   if (!userId || !message) {
     res.status(400).json({ error: "Missing userId or message" });
