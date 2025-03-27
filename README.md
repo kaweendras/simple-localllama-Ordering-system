@@ -97,6 +97,7 @@ Process a chat message and handle order logic.
 - Express
 - MongoDB/Mongoose
 - Ollama for NLP processing
+- LangChain for language processing
 
 ## Project Structure
 
