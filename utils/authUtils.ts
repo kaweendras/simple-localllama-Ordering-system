@@ -4,7 +4,7 @@ import crypto from "crypto";
 
 dotenv.config();
 
-const jwtSecret = process.env.JWT_SECRET as string;
+const jwtSecret = process.env.SECRET_KEY as string;
 
 const verifyToken = (token: string) => {
   try {
