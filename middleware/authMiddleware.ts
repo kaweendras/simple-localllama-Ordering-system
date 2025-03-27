@@ -6,19 +6,27 @@ export const authMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     console.error("No token provided User must logged in to do this action");
-    return res.status(401).json({
+    res.status(401).json({
       message: "No token provided User must logged in to do this action",
     });
   }
 
+  if (!token) {
+    res.status(401).json({
+      message: "No token provided User must logged in to do this action",
+    });
+    return;
+  }
   const { valid, decoded, error } = verifyToken(token);
   if (!valid) {
-    return res.status(401).json({ message: "Invalid token", error });
+    res.status(401).json({ message: "Invalid token", error });
   }
+
+  console.log(decoded);
 
   // Attach decoded token to request object
   // TODO : Fix this type issue and set decoded token to req.user
@@ -26,8 +34,10 @@ export const authMiddleware = (
   const email = (decoded as JwtPayload)?.email;
   if (decoded) {
     // logger.info(`Token verified for user: ${email}`);
+    console.log(decoded);
   } else {
-    console.error(`Token verification failed: ${email}`);
+    console.error(`Token verification failed`);
+    return;
   }
 
   next();
