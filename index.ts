@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import chatRoutes from "./routes/chatRoutes";
+import userRoutes from "./routes/userRoutes";
 import { connectDB } from "./config/db";
 
 // Initialize configuration
@@ -24,6 +25,7 @@ connectDB();
 
 // Routes
 app.use("/api", chatRoutes);
+app.use("/api", userRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
