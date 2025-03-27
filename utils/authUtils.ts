@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -17,8 +18,11 @@ const verifyToken = (token: string) => {
 //create unique token with timestamp and hashing it
 const createUniqueKey = () => {
   const timestamp = new Date().getTime();
-  //hashing the timestamp
-  const uniqueKey = jwt.sign({ timestamp }, jwtSecret);
+  //hashing the timestamp using sha256
+  const hash = crypto.createHash("sha256");
+  const data = hash.update(timestamp.toString(), "utf-8");
+  const gen_hash = data.digest("hex");
+  const uniqueKey = gen_hash;
   return uniqueKey;
 };
 
