@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
   extractOrderDetails,
   tempOrder,
-  matchUserInpurt,
+  matchUserInput,
 } from "../services/ollamaService";
 import {
   createOrder,
@@ -22,6 +22,10 @@ export async function handleChat(req: Request, res: Response) {
   // Check if it's a confirmation message
   if (/yes|go ahead|confirm/i.test(message)) {
     try {
+      if (!tempOrder || !tempOrder.orderDetails) {
+        res.status(400).json({ error: "No temporary order details found." });
+        return;
+      }
       const newOrder = await createOrder(userId, tempOrder.orderDetails);
       res.json({ reply: `Order confirmed! Your order ID is ${newOrder._id}.` });
       return;
@@ -64,7 +68,7 @@ export async function handleChat(req: Request, res: Response) {
     }
 
     // Extract new details
-    const modifiedOrder = await extractOrderDetails(message);
+    const modifiedOrder: any = await extractOrderDetails(message);
     if (!modifiedOrder) {
       res.json({ reply: "Could not understand the modification." });
       return;
@@ -84,7 +88,7 @@ export async function handleChat(req: Request, res: Response) {
     return;
   } else {
     // Extract order details if the message is about an order
-    const structuredOrder = await extractOrderDetails(message);
+    const structuredOrder: any = await extractOrderDetails(message);
 
     if (
       !structuredOrder.orderDetails ||
@@ -119,7 +123,7 @@ export const handleUserResponse = async (req: Request, res: Response) => {
     return;
   }
 
-  const userResponse = await matchUserInpurt(message);
+  const userResponse = await matchUserInput(message);
   console.log("🔍 User response:", userResponse);
   res.json({ reply: userResponse });
 };
