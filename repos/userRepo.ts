@@ -35,4 +35,13 @@ const createUser = async (userDetails: UserDetails) => {
   }
 };
 
-export { getAllUsers, createUser, UserDetails };
+const getUserByEmail = async (email: string) => {
+  try {
+    return await User.findOne({ email });
+  } catch (error) {
+    console.error("Error getting user by email:", error);
+    throw error;
+  }
+};
+
+export { getAllUsers, createUser, UserDetails, getUserByEmail };
