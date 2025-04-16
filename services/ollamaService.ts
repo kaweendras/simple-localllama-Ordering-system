@@ -2,15 +2,13 @@ import {
   orderPromptTemplate,
   matchUserInputTemplate,
 } from "../prompts/orderPrompts";
-import { OllamaClient } from "./ollamaClient";
+import { generateResponse } from "./ollamaClient";
 import { OrderResponse, UserConfirmation } from "../types/order";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 export let tempOrder: OrderResponse | null = null; // Temporary storage with proper typing
-
-const ollamaClient = new OllamaClient();
 
 export async function extractOrderDetails(
   userMessage: string
@@ -22,7 +20,7 @@ export async function extractOrderDetails(
     const prompt = await orderPromptTemplate.format({ userMessage });
 
     // Get response from Ollama client
-    const responseText = await ollamaClient.generateResponse(prompt);
+    const responseText = await generateResponse(prompt);
     console.log("🔍 Ollama Response:", responseText);
 
     const parsedResponse = JSON.parse(responseText) as OrderResponse;
@@ -45,7 +43,7 @@ export const matchUserInput = async (
     const prompt = await matchUserInputTemplate.format({ userMessage });
 
     // Get response from Ollama client
-    const responseText = await ollamaClient.generateResponse(prompt);
+    const responseText = await generateResponse(prompt);
     console.log("🔍 User confirmation response:", responseText);
 
     return JSON.parse(responseText) as UserConfirmation;
