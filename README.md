@@ -57,15 +57,24 @@ The system exposes a REST API that can be integrated with any front-end or messa
 
 ### API Endpoints
 
+Users must log in first and use the bearer token for authentication in the headers of each request.
+
 #### POST /api/chat
 
 Process a chat message and handle order logic.
+
+**Request Headers:**
+
+```json
+{
+  "Authorization": "Bearer <your-token>"
+}
+```
 
 **Request Body:**
 
 ```json
 {
-  "userId": "user123",
   "message": "I'd like to order a large pizza with extra cheese and a coke"
 }
 ```
