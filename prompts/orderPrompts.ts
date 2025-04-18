@@ -47,3 +47,21 @@ export const matchUserInputTemplate = new PromptTemplate({
     Now check the user input from: "{userMessage}"
   `,
 });
+
+
+export const suggetionPromptTemplate = new PromptTemplate({
+  inputVariables: ["pastOrders"],
+  template: `
+    Suggest a few items based on the user input:  
+    Example input: "I want a large cheese pizza with extra pepperoni and a large diet coke."
+    Example output:
+    {{
+      "suggestions": [
+        "large cheese pizza",
+        "extra pepperoni",
+        "large diet coke"
+      ]
+    }}
+    Now suggest items based on past  orders of: "{pastOrders}"
+  `,
+});
