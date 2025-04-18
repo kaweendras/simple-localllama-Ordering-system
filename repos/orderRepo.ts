@@ -35,3 +35,19 @@ export async function updateOrder(order: any, modifiedOrder: any) {
   Object.assign(order, modifiedOrder, { modified: true });
   return await order.save();
 }
+
+export async function getAllOrdersById(userId: string) {
+  if (!userId) {
+    throw new Error("User ID is required to fetch orders.");
+  }
+  if (userId.length === 0) {
+    throw new Error("User ID cannot be empty.");
+  }
+
+  try {
+    return await Order.find({ userId });
+  } catch (err) {
+    console.error("❌ Error fetching orders from db:", err);
+    throw err;
+  }
+}
