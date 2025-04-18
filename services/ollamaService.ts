@@ -1,6 +1,7 @@
 import {
   orderPromptTemplate,
   matchUserInputTemplate,
+  suggetionPromptTemplate
 } from "../prompts/orderPrompts";
 import { generateResponse } from "./ollamaClient";
 import { OrderResponse, UserConfirmation } from "../types/order";
@@ -29,6 +30,28 @@ export async function extractOrderDetails(
     return parsedResponse;
   } catch (error) {
     console.error("❌ Order extraction error:", error);
+    return null;
+  }
+}
+
+export async function suggestItems(
+  pastOrders: string
+): Promise<OrderResponse | null> {
+  console.log("🔍 Suggesting items based on past orders:", pastOrders);
+  try {
+    // Generate the prompt using LangChain
+    const prompt = await suggetionPromptTemplate.format({  pastOrders });
+
+    // Get response from Ollama client
+    const responseText = await generateResponse(prompt);
+    console.log("🔍 Suggestion Response:", responseText);
+
+    const parsedResponse = JSON.parse(responseText) as OrderResponse;
+    tempOrder = parsedResponse;
+
+    return parsedResponse;
+  } catch (error) {
+    console.error("❌ Item suggestion error:", error);
     return null;
   }
 }
