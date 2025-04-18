@@ -55,17 +55,19 @@ export const suggetionPromptTemplate = new PromptTemplate({
     Suggest a few items based on the user input:  
     Example input:"and array of past orders"
     Example output:
-    {
-      "reply": "Based on your past orders, here are some suggestions:",
-      "orderDetails": {
-        "items": ["cheese pizza", "pepperoni pizza"],
+    {{
+      "reply": "Based on your past orders, here are some suggestions. Would you like to confirm this order?",
+      "orderDetails": }}
+        "items": ["cheese pizza"],
         "size": ["large"],
-        "extras": ["extra cheese", "extra sauce"],
-        "drink": ["diet coke", "sprite"]
-      },
+        "extras": ["extra cheese"],
+        "drink": ["diet coke"]
+      }},
       "type": "Suggestion"
-    }
+}}
 
     Now suggest items based on past orders of: "{pastOrders}"
+    one from each orderDetails cagtegory.
+    need output only no codes or explanation or anything else needed, just the result/output:
   `,
 });
