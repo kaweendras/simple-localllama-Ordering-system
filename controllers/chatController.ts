@@ -3,12 +3,14 @@ import {
   extractOrderDetails,
   tempOrder,
   matchUserInput,
+  suggestItems,
 } from "../services/ollamaService";
 import {
   createOrder,
   getLastOrderByUserId,
   getOrderById,
   updateOrder,
+  getAllOrdersById,
 } from "../repos/orderRepo";
 
 import { verifyToken } from "../utils/authUtils";
@@ -95,6 +97,44 @@ export async function handleChat(req: Request, res: Response) {
       modifiedOrder,
     });
     return;
+    
+  } 
+
+  if (/suggestion|recommendation|suggest|recommend/i.test(message)) {
+    const pastOrders = await getAllOrdersById(userId);
+    if (pastOrders && pastOrders.length > 0) {
+      // Properly escape and format the past orders JSON
+      const pastOrdersString = JSON.stringify(pastOrders)
+        .replace(/\\/g, "\\\\") // Escape backslashes
+        .replace(/"/g, '\\"') // Escape double quotes
+        .replace(/\n/g, "\\n"); // Escape newlines
+
+      console.log("🔍 Escaped Past Orders:", pastOrdersString);
+
+      const structuredOrderSuggestion: any = await suggestItems(pastOrdersString);
+      console.log("🔍 Structured Order:", structuredOrderSuggestion);
+
+      if (
+        !structuredOrderSuggestion.orderDetails ||
+        !structuredOrderSuggestion.orderDetails.items ||
+        !structuredOrderSuggestion.orderDetails.size
+      ) {
+        res.json({
+          reply: "Sorry, I couldn't understand your order. Can you try again?",
+        });
+        return;
+      }
+
+      if (structuredOrderSuggestion.orderDetails) {
+        // Ask for confirmation
+        res.json({
+          reply: structuredOrderSuggestion.reply,
+          orderDetails: structuredOrderSuggestion.orderDetails,
+          type: structuredOrderSuggestion.type,
+        });
+        return;
+      }
+    }
   } else {
     // Extract order details if the message is about an order
     const structuredOrder: any = await extractOrderDetails(message);
@@ -147,4 +187,4 @@ export const handleUserResponse = async (req: Request, res: Response) => {
   const userResponse = await matchUserInput(message);
   console.log("🔍 User response:", userResponse);
   res.json({ reply: userResponse });
-};
+}
