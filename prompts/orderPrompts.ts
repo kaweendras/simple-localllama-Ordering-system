@@ -53,15 +53,19 @@ export const suggetionPromptTemplate = new PromptTemplate({
   inputVariables: ["pastOrders"],
   template: `
     Suggest a few items based on the user input:  
-    Example input: "I want a large cheese pizza with extra pepperoni and a large diet coke."
+    Example input:"and array of past orders"
     Example output:
-    {{
-      "suggestions": [
-        "large cheese pizza",
-        "extra pepperoni",
-        "large diet coke"
-      ]
-    }}
-    Now suggest items based on past  orders of: "{pastOrders}"
+    {
+      "reply": "Based on your past orders, here are some suggestions:",
+      "orderDetails": {
+        "items": ["cheese pizza", "pepperoni pizza"],
+        "size": ["large"],
+        "extras": ["extra cheese", "extra sauce"],
+        "drink": ["diet coke", "sprite"]
+      },
+      "type": "Suggestion"
+    }
+
+    Now suggest items based on past orders of: "{pastOrders}"
   `,
 });
