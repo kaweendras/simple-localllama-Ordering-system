@@ -38,7 +38,7 @@ export async function handleChat(req: Request, res: Response) {
         return;
       }
       const newOrder = await createOrder(userId, tempOrder.orderDetails);
-      res.json({ reply: `Order confirmed! Your order ID is ${newOrder._id}.` });
+      res.json({ reply: `Order confirmed! Your order ID is ${newOrder._id}.` ,type: "Order Confirmation"});
       return;
     } catch (err) {
       console.error("❌ Error saving order in db:", err);
