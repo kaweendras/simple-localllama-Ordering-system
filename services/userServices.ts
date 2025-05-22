@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { createUser, getUserByEmail, UserDetails } from "../repos/userRepo";
 import { createUniqueKey } from "../utils/authUtils";
+import logger from "../utils/logger";
 
 const SECRET_KEY = process.env.SECRET_KEY as string;
 
@@ -42,7 +43,11 @@ export const registerUser = async (userData: Omit<UserDetails, "userId">) => {
       token,
     };
   } catch (error) {
-    console.error("Registration error:", error);
+    if (error instanceof Error) {
+      logger.error(`❌ Error during user registration: ${error.message}`);
+    } else {
+      logger.error("❌ Unknown error during user registration");
+    }
     throw error;
   }
 };
@@ -53,12 +58,14 @@ export const loginUser = async (email: string, password: string) => {
     // Find user by email
     const user = await getUserByEmail(email);
     if (!user) {
+      logger.error("❌ Invalid credentials");
       throw new Error("Invalid credentials");
     }
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
+      logger.error("❌ Invalid credentials");
       throw new Error("Invalid credentials");
     }
 
@@ -77,6 +84,7 @@ export const loginUser = async (email: string, password: string) => {
     );
 
     // Return user data without password and token
+    logger.info("🔑 User logged in successfully");
     return {
       user: {
         userId: user.userId,
@@ -87,7 +95,7 @@ export const loginUser = async (email: string, password: string) => {
       token,
     };
   } catch (error) {
-    console.error("Login error:", error);
+    logger.error(`❌ Error during user login: ${error}`);
     throw error;
   }
 };

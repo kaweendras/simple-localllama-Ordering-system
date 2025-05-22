@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
+import * as ollama from "../services/ollama/ollamaService";
+import * as openAI from "../services/openAI/openAIService";
 import {
-  extractOrderDetails,
-  tempOrder,
-  matchUserInput,
-  suggestItems,
-} from "../services/ollamaService";
+  getTempOrder,
+  setTempOrder,
+  deleteTempOrder,
+} from "../utils/tempOrder";
 import {
   createOrder,
   getLastOrderByUserId,
@@ -14,6 +15,10 @@ import {
 } from "../repos/orderRepo";
 
 import { verifyToken } from "../utils/authUtils";
+
+import { config } from "../config/environment";
+
+const Model = config.MODE === "local" ? ollama : openAI;
 
 export async function handleChat(req: Request, res: Response) {
   const { message } = req.body;
@@ -32,13 +37,20 @@ export async function handleChat(req: Request, res: Response) {
 
   // Check if it's a confirmation message
   if (/yes|go ahead|confirm/i.test(message)) {
+    console.log("🔍 Confirming order...");
     try {
+      const tempOrder = await getTempOrder(userId);
       if (!tempOrder || !tempOrder.orderDetails) {
         res.status(400).json({ error: "No temporary order details found." });
         return;
       }
       const newOrder = await createOrder(userId, tempOrder.orderDetails);
-      res.json({ reply: `Order confirmed! Your order ID is ${newOrder._id}.` ,type: "Order Confirmation"});
+      await deleteTempOrder(userId); // Clear the temporary order after confirmation
+      console.log("✅ Order saved in db:", newOrder);
+      res.json({
+        reply: `Order confirmed! Your order ID is ${newOrder._id}.`,
+        type: "Order Confirmation",
+      });
       return;
     } catch (err) {
       console.error("❌ Error saving order in db:", err);
@@ -49,6 +61,7 @@ export async function handleChat(req: Request, res: Response) {
 
   // Check if user wants to view their order
   if (/view order|show order|view my order|show my order/i.test(message)) {
+    console.log("🔍 Fetching last order...");
     const lastOrder = await getLastOrderByUserId(userId);
     if (lastOrder) {
       res.json({
@@ -65,6 +78,7 @@ export async function handleChat(req: Request, res: Response) {
 
   // Check if it's a modification request
   const modifyMatch = message.match(/change order (\w+)/i);
+  console.log("🔍 Modifying the order");
   if (modifyMatch) {
     const orderId = modifyMatch[1];
     const order = await getOrderById(orderId);
@@ -79,7 +93,7 @@ export async function handleChat(req: Request, res: Response) {
     }
 
     // Extract new details
-    const modifiedOrder: any = await extractOrderDetails(message);
+    const modifiedOrder: any = await Model.extractOrderDetails(userId, message);
     if (!modifiedOrder) {
       res.json({ reply: "Could not understand the modification." });
       return;
@@ -97,8 +111,7 @@ export async function handleChat(req: Request, res: Response) {
       modifiedOrder,
     });
     return;
-    
-  } 
+  }
 
   if (/suggestion|recommendation|suggest|recommend/i.test(message)) {
     const pastOrders = await getAllOrdersById(userId);
@@ -109,9 +122,12 @@ export async function handleChat(req: Request, res: Response) {
         .replace(/"/g, '\\"') // Escape double quotes
         .replace(/\n/g, "\\n"); // Escape newlines
 
-      console.log("🔍 Escaped Past Orders:", pastOrdersString);
+      // console.log("🔍 Escaped Past Orders:", pastOrdersString);
 
-      const structuredOrderSuggestion: any = await suggestItems(pastOrdersString);
+      const structuredOrderSuggestion: any = await Model.suggestItems(
+        userId,
+        pastOrdersString
+      );
       console.log("🔍 Structured Order:", structuredOrderSuggestion);
 
       if (
@@ -135,9 +151,24 @@ export async function handleChat(req: Request, res: Response) {
         return;
       }
     }
+  }
+  //if contains"past orders" or "previous orders" or "last orders" or "my orders"
+  if (/past orders|previous orders|last orders|my orders/i.test(message)) {
+    const pastOrders = await getAllOrdersById(userId);
+    if (pastOrders && pastOrders.length > 0) {
+      console.log("🔍 Past Orders:", pastOrders);
+      res.json(pastOrders);
+      return;
+    } else {
+      res.json({ reply: "No order found." });
+      return;
+    }
   } else {
     // Extract order details if the message is about an order
-    const structuredOrder: any = await extractOrderDetails(message);
+    const structuredOrder: any = await Model.extractOrderDetails(
+      userId,
+      message
+    );
 
     if (
       !structuredOrder.orderDetails ||
@@ -184,7 +215,7 @@ export const handleUserResponse = async (req: Request, res: Response) => {
     return;
   }
 
-  const userResponse = await matchUserInput(message);
+  const userResponse = await Model.matchUserInput(message);
   console.log("🔍 User response:", userResponse);
   res.json({ reply: userResponse });
-}
+};

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { config } from "../config/environment";
+import { config } from "../../config/environment";
 
 interface OllamaRequest {
   model: string;
@@ -7,8 +7,8 @@ interface OllamaRequest {
   stream: boolean;
 }
 
-const apiUrl = config.ollama.apiUrl;
-const modelName = config.ollama.modelName;
+const apiUrl = config.OLLAMA.APIURL;
+const modelName = config.OLLAMA.MODEL_NAME;
 
 export const generateResponse = async (prompt: string): Promise<string> => {
   try {

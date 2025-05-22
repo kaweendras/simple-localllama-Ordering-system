@@ -33,6 +33,9 @@ export const authMiddleware = (
   if (decoded) {
   } else {
     console.error(`Token verification failed`);
+    res.status(401).json({
+      message: "Token verification failed",
+    });
     return;
   }
 

@@ -25,11 +25,11 @@ OrderAI is a Node.js application that uses AI to process natural language food o
 
 ## Installation
 
-1. Clone the repository:
+1. Clone the repository: 
 
    ```
-   git clone https://github.com/kaweendras/simple-localllama-Ordering-system.git
-   cd simple-localllama-Ordering-system
+   git clone https://github.com/kaweendras/llm-order-bot.git
+   cd llm-order-bot
    ```
 
 2. Install dependencies:

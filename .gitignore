@@ -1,3 +1,6 @@
 /.env
 /back
 /node_modules
+/logs
+/dump.rdb
+/_test

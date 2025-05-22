@@ -1,73 +1,23 @@
 import { PromptTemplate } from "@langchain/core/prompts";
+import * as fs from 'fs';
+import * as path from 'path';
 
-// Prompt for extracting order details
+// Import templates from JSON file
+const templatesPath = path.join(__dirname, '..', 'langChainTemplates', 'orderTemplates.json');
+const templatesJson = JSON.parse(fs.readFileSync(templatesPath, 'utf-8'));
+
+// Create PromptTemplate instances from the JSON templates
 export const orderPromptTemplate = new PromptTemplate({
-  inputVariables: ["userMessage"],
-  template: `
-    Extract structured order details in JSON format (no codes or explanation or anything else needed, just the result/output):
-    
-    Example input: "I want a large cheese pizza with extra pepperoni and a large diet coke."
-    
-    Example output: 
-    {{
-      "reply": "Got it! You ordered a large cheese pizza with pepperoni and a large diet coke. Please confirm (yes/no).",
-      "orderDetails": {{
-        "items": ["cheese pizza"],
-        "size": ["large"],
-        "extras": ["pepperoni"],
-        "drink": ["large diet coke"]
-      }},
-      "type": "Place Order"
-    }}
-    
-    Now extract the order from: "{userMessage}"
-  `,
+  inputVariables: templatesJson.orderPromptTemplate.inputVariables,
+  template: templatesJson.orderPromptTemplate.template,
 });
 
-// Prompt for user confirmation matching
 export const matchUserInputTemplate = new PromptTemplate({
-  inputVariables: ["userMessage"],
-  template: `
-    Check if the user input is positive or negative:
-    
-    Example Positive input: "Yes Go Ahead", "Yes", "confirm", "I want to confirm", "sounds good", "positive". 
-    No codes or scripts needed. Just the result/output.
-    
-    Example output: 
-    {{
-      "userResponse": "yes"
-    }}
-    
-    Example Negative input: "No", "I don't want to confirm", "I don't want to order", "negative", "scratch that", "cancel".
-    Example output: 
-    {{
-      "userResponse": "no"
-    }}
-    
-    Now check the user input from: "{userMessage}"
-  `,
+  inputVariables: templatesJson.matchUserInputTemplate.inputVariables,
+  template: templatesJson.matchUserInputTemplate.template,
 });
-
 
 export const suggetionPromptTemplate = new PromptTemplate({
-  inputVariables: ["pastOrders"],
-  template: `
-    Suggest a few items based on the user input:  
-    Example input:"and array of past orders"
-    Example output:
-    {{
-      "reply": "Based on your past orders, here are some suggestions. Would you like to confirm this order?",
-      "orderDetails": }}
-        "items": ["cheese pizza"],
-        "size": ["large"],
-        "extras": ["extra cheese"],
-        "drink": ["diet coke"]
-      }},
-      "type": "Suggestion"
-}}
-
-    Now suggest items based on past orders of: "{pastOrders}"
-    one from each orderDetails cagtegory.
-    need output only no codes or explanation or anything else needed, just the result/output:
-  `,
+  inputVariables: templatesJson.suggetionPromptTemplate.inputVariables,
+  template: templatesJson.suggetionPromptTemplate.template,
 });

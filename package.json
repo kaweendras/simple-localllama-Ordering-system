@@ -17,10 +17,15 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "gpt-tokenizer": "^2.9.0",
     "jsonwebtoken": "^9.0.2",
     "langchain": "^0.3.19",
     "mongoose": "^8.12.1",
-    "ollama": "^0.5.14"
+    "ollama": "^0.5.14",
+    "openai": "^4.97.0",
+    "redis": "^5.0.1",
+    "tiktoken": "^1.0.21",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",

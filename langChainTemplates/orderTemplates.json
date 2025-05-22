@@ -1,0 +1,14 @@
+{
+  "orderPromptTemplate": {
+    "inputVariables": ["userMessage"],
+    "template": "Extract structured order details in JSON format (no codes or explanation or anything else needed, just the result/output):\n\nExample input: \"I want a large cheese pizza with extra pepperoni and a large diet coke.\"\n\nExample output: \n{{\n  \"reply\": \"Got it! You ordered a large cheese pizza with pepperoni and a large diet coke. Please confirm (yes/no).\",\n  \"orderDetails\": {{\n    \"items\": [\"cheese pizza\"],\n    \"size\": [\"large\"],\n    \"extras\": [\"pepperoni\"],\n    \"drink\": [\"large diet coke\"]\n  }},\n  \"type\": \"Place Order\"\n}}\n\nNow extract the order from: \"{userMessage}\""
+  },
+  "matchUserInputTemplate": {
+    "inputVariables": ["userMessage"],
+    "template": "Check if the user input is positive or negative:\n\nExample Positive input: \"Yes Go Ahead\", \"Yes\", \"confirm\", \"I want to confirm\", \"sounds good\", \"positive\". \nNo codes or scripts needed. Just the result/output.\n\nExample output: \n{{\n  \"userResponse\": \"yes\"\n}}\n\nExample Negative input: \"No\", \"I don't want to confirm\", \"I don't want to order\", \"negative\", \"scratch that\", \"cancel\".\nExample output: \n{{\n  \"userResponse\": \"no\"\n}}\n\nNow check the user input from: \"{userMessage}\""
+  },
+  "suggetionPromptTemplate": {
+    "inputVariables": ["pastOrders"],
+    "template": "Suggest a few items based on the user input:  \nExample input:\"and array of past orders\"\nExample output:\n{{\n  \"reply\": \"Based on your past orders, here are some suggestions. Would you like to confirm this order?\",\n  \"orderDetails\": {{\n    \"items\": [\"cheese pizza\"],\n    \"size\": [\"large\"],\n    \"extras\": [\"extra cheese\"],\n    \"drink\": [\"diet coke\"]\n  }},\n  \"type\": \"Suggestion\"\n}}\n\nNow suggest items based on past orders of: \"{pastOrders}\"\none from each orderDetails cagtegory.\nneed output only no codes or explanation or anything else needed, just the result/output:"
+  }
+}
